@@ -1,0 +1,8 @@
+((synopsis "Chicken bindings for hiredis")
+ (author "Rolando Abarca")
+ (maintainer "Rolando Abarca")
+ (dependencies foreigners)
+ (foreign-dependencies "hiredis")
+ (categoriy databases)
+ (license "BSD")
+ (components (extension redis (custom-build "build-redis"))))

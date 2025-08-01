@@ -1,4 +1,8 @@
 .aider*
+*.o
 *.so
 *.import.scm
 *~
+hiredis.install.sh
+hiredis.link
+hiredis.build.sh

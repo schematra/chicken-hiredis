@@ -28,15 +28,12 @@ sudo apt-get install libhiredis-dev
 sudo yum install hiredis-devel
 ```
 
-## Building
+## Building & Installing
 
-You might need to add `-I` and `-L` flags to point to the place where
-your hiredis lib is located. E.g. on macos you need to add
-`-I/opt/homebrew/include`, but if you have pkg-config, the following
-command should work for most environments.
+Just run chicken-install in the repo root.
 
 ```sh
-csc -O2 -C "$(pkg-config hiredis --cflags)" -L "$(pkg-config hiredis --libs)" -s hiredis.scm -j hiredis
+chicken-install
 ```
 
 ## Usage

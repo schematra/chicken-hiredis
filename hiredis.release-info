@@ -1,0 +1,3 @@
+(repo git "https://github.com/schematra/chicken-hiredis")
+(uri targz "https://github.com/schematra/chicken-hiredis/archive/refs/tags/{egg-release}.tar.gz")
+(release "0.1.0")

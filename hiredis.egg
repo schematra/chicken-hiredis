@@ -4,5 +4,6 @@
  (dependencies foreigners)
  (foreign-dependencies "hiredis")
  (category databases)
- (license "GPL3")
- (components (extension hiredis (custom-build "build-redis"))))
+ (license "BSD-3-Clause")
+ (components
+   (extension hiredis (custom-build "build-redis"))))

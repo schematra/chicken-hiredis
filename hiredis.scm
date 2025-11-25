@@ -77,14 +77,17 @@
    nonnull-c-pointer
    ((c-pointer ctx) (int argc) (scheme-object arglist))
    "char **argv = malloc(argc * sizeof(char *));"
+   "size_t *argvlen = malloc(argc * sizeof(size_t));"
    "C_word pair = arglist;"
    "for (int i = 0; i < argc; ++i) {"
    "  C_word item = C_block_item(pair, 0); // car"
    "  argv[i] = C_c_string(item);"
+   "  argvlen[i] = C_header_size(item); // string length without null terminator"
    "  pair = C_block_item(pair, 1); // cdr"
    "}"
-   "void *result = redisCommandArgv(ctx, argc, (const char **)argv, NULL);"
+   "void *result = redisCommandArgv(ctx, argc, (const char **)argv, argvlen);"
    "free(argv);"
+   "free(argvlen);"
    "C_return(result);"
    ))
 

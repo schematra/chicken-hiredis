@@ -40,6 +40,7 @@
 (import
  chicken.base
  chicken.foreign
+ chicken.memory
  srfi-18)
 
 (foreign-declare "#include <hiredis/hiredis.h>")
@@ -134,7 +135,7 @@
      ((= reply-type REDIS_REPLY_INTEGER) (redis-reply-int reply))
      ((= reply-type REDIS_REPLY_DOUBLE)  (redis-reply-double reply))
      ((= reply-type REDIS_REPLY_ARRAY)   (build-array-reply reply))
-     ((= reply-type REDIS_REPLY_NIL)     #f)
+     ((= reply-type REDIS_REPLY_NIL)     '())
      (else                               (cons 'unknown reply-type)))))
 
 (define (build-array-reply reply)
@@ -185,8 +186,11 @@
 
 ;; return a copy (that we manage) of the string in the reply
 (define (redis-reply-str reply)
-  (let ((rstr ((foreign-lambda c-string "redisReplyStr" c-pointer) reply)))
-    (string-copy rstr)))
+  (let* ((str-ptr ((foreign-lambda c-pointer "redisReplyStr" c-pointer) reply))
+         (size    ((foreign-lambda size_t "redisReplyLen" c-pointer) reply))
+         (out-str (make-string size)))
+    (move-memory! str-ptr out-str size)
+    out-str))
 
 (define redis-reply-int
   (foreign-lambda integer64 "redisReplyInteger" c-pointer))

@@ -6,6 +6,10 @@ const char* redisReplyStr(redisReply *r) {
     return r->str;
 }
 
+size_t redisReplyLen(redisReply *r) {
+    return r->len;
+}
+
 int64_t redisReplyInteger(redisReply *r) {
     return r->integer;
 }

@@ -258,7 +258,39 @@ paths: `rh_append_argv`'s `argv`/`argvlen` pair, `freeReplyObject` in both
 `redis-command` and `redis-subscribe`, and the per-reply string copies
 produced by `redis-reply-str`.
 
-## 6c. One-shot regression check
+## 6c. Connection churn — connect / cmd / disconnect in a tight loop
+
+Separately validates the common "one context per request" pattern: a fresh
+connection for every unit of work, explicitly disconnected at the end.
+
+```sh
+ulimit -n 256
+csi -R hiredis -e '
+(let loop ((i 0))
+  (when (< i 2000)
+    (let ((ctx (redis-connect)))
+      (redis-command ctx "SET" "churn:k" "v")
+      (redis-command ctx "GET" "churn:k")
+      (redis-disconnect ctx))
+    (loop (+ i 1))))
+(display "2000 churn cycles completed under ulimit -n 256\n")'
+```
+
+Observed: `2000 churn cycles completed under ulimit -n 256` — no EMFILE.
+`redis-disconnect` closes the fd synchronously (not waiting for GC), so a
+one-fd-per-cycle leak would hit the ulimit around cycle ~250.
+
+Under `leaks`, 3000 churn cycles:
+
+```
+Process: 7236 nodes malloced for 12642 KB
+Process: 0 leaks for 0 total leaked bytes.
+```
+
+RSS plateaus at ~11 MB — the same working set as the long-lived workload in
+section 6a, confirming there is no per-cycle growth.
+
+## 6d. One-shot regression check
 
 For CI or ad-hoc runs, `leaks -atExit` wraps a command and runs the analysis
 just before the program exits:

@@ -1,4 +1,5 @@
 ((synopsis "Chicken bindings for hiredis")
+ (version "0.2.0")
  (author "Rolando Abarca")
  (maintainer "Rolando Abarca")
  (dependencies foreigners)
